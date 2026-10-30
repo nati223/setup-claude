@@ -37,9 +37,39 @@ setup; out=$(DRY_RUN=1 step 07-graphify); rc=$?
 assert_eq 0 "$rc" "07: dry-run ok even with nothing installed"
 
 # --- step 04
+setup; fake_cmd unzip; fake_cmd bun 'mkdir -p "$HOME/.bun/bin"; printf "#!/bin/bash\necho 2.8.3\n" > "$SANDBOX/fake/qmd"; chmod +x "$SANDBOX/fake/qmd"'; fake_cmd npm
+out=$(step 04-qmd-cli); rc=$?
+assert_eq 0 "$rc" "04: bun present: ok"
+assert_contains "$(cat "$FAKE_LOG")" "bun install -g @tobilu/qmd" "04: bun install -g @tobilu/qmd"
+assert_eq 0 "$(n '^npm')" "04: bun path does not touch npm"
+
+setup; fake_cmd unzip
+cat > "$SANDBOX/bun-inst.sh" <<'BUNINST'
+mkdir -p "$HOME/.bun/bin"
+cat > "$HOME/.bun/bin/bun" <<'B'
+#!/bin/bash
+echo "bun $*" >> "$FAKE_LOG"
+printf '#!/bin/bash\necho 2.8.3\n' > "$HOME/.bun/bin/qmd"; chmod +x "$HOME/.bun/bin/qmd"
+B
+chmod +x "$HOME/.bun/bin/bun"
+BUNINST
+export BUN_INSTALL_URL="file://$SANDBOX/bun-inst.sh"
+out=$(step 04-qmd-cli); rc=$?
+assert_eq 0 "$rc" "04: bun missing: installer used, qmd installed"
+assert_contains "$(cat "$FAKE_LOG")" "bun install -g @tobilu/qmd" "04: installs qmd with the freshly installed bun"
+unset BUN_INSTALL_URL
+
+setup; out=$(step 04-qmd-cli); rc=$?
+assert_eq 1 "$rc" "04: no bun, no unzip, no npm: FAILED"
+assert_contains "$out" "unzip" "04: reason names unzip (bun installer needs it)"
+
+setup; fake_cmd unzip; fake_cmd bun 'exit 1'; fake_cmd node 'echo v22.1.0'; fake_cmd npm "printf '#!/bin/bash\necho 2.8.3\n' > \"$SANDBOX/fake/qmd\"; chmod +x \"$SANDBOX/fake/qmd\""
+out=$(step 04-qmd-cli); rc=$?
+assert_eq 0 "$rc" "04: bun install fails: falls back to npm"
+assert_contains "$(cat "$FAKE_LOG")" "npm install" "04: npm fallback ran"
 setup; out=$(step 04-qmd-cli); rc=$?
 assert_eq 1 "$rc" "04: no npm/bun: FAILED"
-assert_contains "$out" "need npm" "04: reason says need npm"
+assert_contains "$out" "need bun" "04: reason says need bun"
 
 setup; fake_cmd node 'echo v22.1.0'; fake_cmd npm "printf '#!/bin/bash\necho 2.8.3\n' > \"$SANDBOX/fake/qmd\"; chmod +x \"$SANDBOX/fake/qmd\""
 out=$(step 04-qmd-cli); rc=$?

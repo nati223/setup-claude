@@ -10,8 +10,13 @@ nblocks() { grep -cF "$BEGIN" "$HOME/.claude/CLAUDE.md"; }
 
 # config content
 cfg="$(cat "$REAL_REPO/config/CLAUDE.md")"
-assert_contains "$cfg" "non-binary" "config notes qmd is for non-binary files"
-assert_contains "$cfg" "graphify" "config has graphify rule"
+assert_contains "$cfg" "Search order" "config has the one graphify-vs-qmd rule"
+assert_contains "$cfg" "graphify" "config mentions graphify in the search order"
+assert_contains "$cfg" "qmd" "config mentions qmd in the search order"
+assert_eq 0 "$(printf '%s' "$cfg" | grep -c 'Available tools')" "config does not repeat the qmd command list (qmd skill covers it)"
+assert_eq 0 "$(printf '%s' "$cfg" | grep -c 'GRAPH_REPORT')" "config does not repeat graphify's own rules"
+assert_eq 0 "$(printf '%s' "$cfg" | grep -c 'use the installed graphify skill')" "config does not repeat the /graphify line (harness handles slash skills)"
+assert_eq 1 "$([ "$(printf '%s\n' "$cfg" | wc -l)" -lt 25 ] && echo 1 || echo 0)" "config block stays short"
 assert_contains "$cfg" "Code Review Standards" "config has code review standards"
 assert_eq 0 "$(printf '%s' "$cfg" | grep -c 'How to Respond')" "config omits How to Respond"
 assert_eq 0 "$(printf '%s' "$cfg" | grep -c '/home/')" "config has no personal paths"

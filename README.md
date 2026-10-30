@@ -17,8 +17,8 @@ Each step runs on its own. A failing step is reported and the run continues. The
 |---|---|
 | 01 claude | Claude Code (official installer) and `~/.local/bin` on PATH |
 | 02 plugins | superpowers, qmd, andrej-karpathy-skills, claude-handoff (from plugin marketplaces) |
-| 03 claude-md | a marked block in `~/.claude/CLAUDE.md` (qmd/graphify rules, code-review standards); text outside the block stays. Runs before graphify on purpose: graphify then finds its name in the file and adds nothing |
-| 04 qmd-cli | the `qmd` CLI (`@tobilu/qmd`; needs Node 22+ or bun; the plugin needs it) |
+| 03 claude-md | a short marked block in `~/.claude/CLAUDE.md`: one search-order rule (graphify, then qmd, then Read/Grep) and the code-review standards. It does not repeat what the qmd skill and graphify already tell Claude. Text outside the block stays. Runs before graphify on purpose: graphify then finds its name in the file and adds nothing |
+| 04 qmd-cli | the `qmd` CLI (`@tobilu/qmd`) with bun (the bun installer is run if bun is missing; it needs `unzip`). Falls back to npm with Node 22+. The plugin needs this command |
 | 05 style | output style `Concise Custom` in `~/.claude/output-styles/` |
 | 06 settings | sets `model: sonnet`, `advisorModel: opus`, `outputStyle: Concise Custom` in `~/.claude/settings.json`; other keys stay; file mode and symlinks kept |
 | 07 graphify | `uv` (if missing), then `graphifyy` and its Claude skill |
@@ -41,7 +41,8 @@ bash install.sh [--only STEP]... [--skip STEP]... [--with-headroom] [--dry-run]
 | qmd (plugin) | step 02, marketplace `qmd` | [tobi/qmd](https://github.com/tobi/qmd) |
 | andrej-karpathy-skills (plugin) | step 02, marketplace `karpathy-skills` | [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) |
 | claude-handoff (plugin) | step 02, marketplace `claude-handoff` | [392fyc/claude-handoff](https://github.com/392fyc/claude-handoff) |
-| qmd CLI (`@tobilu/qmd`) | step 04 (npm or bun) | [tobi/qmd](https://github.com/tobi/qmd) |
+| qmd CLI (`@tobilu/qmd`) | step 04 (bun; npm as fallback) | [tobi/qmd](https://github.com/tobi/qmd) |
+| bun | step 04, only if missing | [bun.sh](https://bun.sh) |
 | graphify (`graphifyy` on PyPI) | step 07 (uv; no plugin marketplace entry exists) | [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) |
 | uv | step 07, only if missing | [astral-sh/uv](https://github.com/astral-sh/uv) |
 | headroom (optional) | step 90, marketplace `headroom-marketplace` | [chopratejas/headroom](https://github.com/chopratejas/headroom) |
@@ -55,6 +56,7 @@ The output style is based on the built-in Concise style described in the [output
 
 ## Notes
 
+- **qmd per project** (not scripted): `qmd collection add ./proj --name proj --mask "**/*.{md,txt,py}"`, then `qmd embed` for semantic search, `qmd update` after changes, `qmd status` to check. The plugin registers qmd's MCP server itself, so no `~/.claude/mcp.json` entry is needed.
 - **qmd searches text files only** (md, txt, code). PDF and DOCX are not searchable in qmd. HTML indexes as raw markup (noisy). Create collections yourself, for example `qmd collection add ~/notes --name notes --mask "**/*.{md,txt}"`.
 - **The style is a copy.** `config/output-styles/concise-custom.md` holds the text of Claude Code 2.1.314's built-in Concise style plus four additions. If Anthropic changes the built-in style, this copy does not follow.
 - **Existing `CLAUDE.md` without markers:** the script backs it up and appends the block. Rules may then appear twice. Check the file.

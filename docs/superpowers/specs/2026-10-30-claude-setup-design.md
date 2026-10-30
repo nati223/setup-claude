@@ -80,6 +80,10 @@ Run with a throwaway `HOME` (and `XDG_CONFIG_HOME` / `XDG_CACHE_HOME`) so the re
 - Network commands are bounded by `NET_TIMEOUT` (default 900 s); `GIT_TERMINAL_PROMPT=0`.
 - Step 01 requires `claude --version` to work and recognises only a real `PATH=` line.
 
+## Changes after the qmd/bun review
+- Step 04 installs the qmd CLI with bun first (official bun installer if bun is missing; needs `unzip`), npm (Node 22+) only as a fallback. Checked in an isolated HOME: `bun install -g @tobilu/qmd` gives `qmd 2.8.3`; search and `qmd embed` work.
+- `config/CLAUDE.md` is now one "Search order" rule plus the code-review standards. Removed as redundant: the qmd command list (the qmd skill has a richer, newer workflow), graphify's query rules (graphify's skill description and its project install already say them), and the `/graphify` line (the harness already invokes slash skills).
+
 ## Left to the builder
 Script style, log format, exact CLI flags, how to detect "already installed", README wording.
 
