@@ -73,6 +73,13 @@ Run with a throwaway `HOME` (and `XDG_CONFIG_HOME` / `XDG_CACHE_HOME`) so the re
 - **Pinning.** No version pins, no minimum-version check. `curl | bash` for Claude is accepted because it is the official method. If a newer Claude Code rejects a flag or key, the step fails loudly.
 - **`advisorModel`.** It is a real key: it is already in the owner's working `settings.json`.
 
+## Changes after the final review
+- Steps 03 and 07 swapped: `03-claude-md` now runs before `07-graphify` (graphify writes its own block into CLAUDE.md unless the file already mentions graphify).
+- `install.sh` backs up `settings.json` and `CLAUDE.md` before step 01 (plugin commands rewrite `settings.json`). Backups skip identical content.
+- Writes keep file mode and follow symlinks. A begin marker with no end marker makes step 03 FAILED and touches nothing.
+- Network commands are bounded by `NET_TIMEOUT` (default 900 s); `GIT_TERMINAL_PROMPT=0`.
+- Step 01 requires `claude --version` to work and recognises only a real `PATH=` line.
+
 ## Left to the builder
 Script style, log format, exact CLI flags, how to detect "already installed", README wording.
 

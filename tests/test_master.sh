@@ -44,4 +44,18 @@ assert_contains "$out" "OK       90-headroom" "headroom runs with flag"
 out=$(inst --bogus); rc=$?
 assert_eq 2 "$rc" "unknown flag exits 2"
 assert_contains "$out" "Usage" "usage printed"
+
+# pre-run backup of settings.json / CLAUDE.md before any step can rewrite them
+make_sandbox; export STEPS_DIR="$SANDBOX/steps2"; mkdir -p "$STEPS_DIR"
+printf 'step_run() { echo rewritten > "$HOME/.claude/settings.json"; echo "git=$GIT_TERMINAL_PROMPT"; }\n' > "$STEPS_DIR/01-x.sh"
+echo '{"orig": 1}' > "$HOME/.claude/settings.json"; echo "my rules" > "$HOME/.claude/CLAUDE.md"
+out=$(inst)
+bak=$(find "$HOME/.claude" -name 'settings.json.bak.*' | head -1)
+assert_eq '{"orig": 1}' "$(cat "$bak" 2>/dev/null)" "pre-run backup holds the original settings.json"
+assert_eq 1 "$(find "$HOME/.claude" -name 'CLAUDE.md.bak.*' | wc -l)" "pre-run backup of CLAUDE.md"
+assert_contains "$out" "git=0" "GIT_TERMINAL_PROMPT=0 exported to steps"
+make_sandbox; export STEPS_DIR="$SANDBOX/steps3"; mkdir -p "$STEPS_DIR"
+printf 'step_run() { return 0; }\n' > "$STEPS_DIR/01-x.sh"; echo '{"orig": 1}' > "$HOME/.claude/settings.json"
+inst --dry-run >/dev/null
+assert_eq 0 "$(find "$HOME/.claude" -name '*.bak.*' | wc -l)" "dry-run makes no pre-run backup"
 finish

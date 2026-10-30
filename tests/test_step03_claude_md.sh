@@ -4,7 +4,7 @@ source "$REPO_DIR/lib/common.sh"
 REAL_REPO="$REPO_DIR"
 BEGIN='<!-- setup-claude:begin -->'; END='<!-- setup-claude:end -->'
 # shellcheck disable=SC1090
-step() { ( source "$REAL_REPO/steps/07-claude-md.sh"; REPO_DIR="${FAKE_REPO:-$REAL_REPO}" step_run ) 2>&1; }
+step() { ( source "$REAL_REPO/steps/03-claude-md.sh"; REPO_DIR="${FAKE_REPO:-$REAL_REPO}" step_run ) 2>&1; }
 baks() { find "$HOME/.claude" -name 'CLAUDE.md.bak.*' | wc -l; }
 nblocks() { grep -cF "$BEGIN" "$HOME/.claude/CLAUDE.md"; }
 
@@ -50,6 +50,21 @@ assert_eq 1 "$(baks)" "changed file is backed up"
 FAKE_REPO="$FAKE_REPO" step >/dev/null
 assert_eq 1 "$(baks)" "no second backup when unchanged"
 unset FAKE_REPO
+
+# mode and symlink preserved
+make_sandbox; echo "mine" > "$HOME/.claude/CLAUDE.md"; chmod 600 "$HOME/.claude/CLAUDE.md"; step >/dev/null
+assert_eq 600 "$(stat -c %a "$HOME/.claude/CLAUDE.md")" "CLAUDE.md keeps mode 600"
+make_sandbox; echo "mine" > "$HOME/real.md"; ln -s "$HOME/real.md" "$HOME/.claude/CLAUDE.md"; step >/dev/null
+assert_eq 1 "$([ -L "$HOME/.claude/CLAUDE.md" ] && echo 1 || echo 0)" "CLAUDE.md symlink stays a symlink"
+assert_contains "$(cat "$HOME/real.md")" "setup-claude:begin" "symlink target got the block"
+
+# begin marker without end marker: refuse, touch nothing
+make_sandbox; printf 'mine1\n%s\nedited body\nmy later rule\n' "$BEGIN" > "$HOME/.claude/CLAUDE.md"; before=$(cksum < "$HOME/.claude/CLAUDE.md")
+out=$(step); rc=$?
+assert_eq 1 "$rc" "unmatched begin marker is FAILED"
+assert_contains "$out" "reason: unmatched" "reason names the unmatched marker"
+assert_eq "$before" "$(cksum < "$HOME/.claude/CLAUDE.md")" "unmatched marker: file untouched"
+assert_eq 0 "$(baks)" "unmatched marker: no backup churn"
 
 # dry run
 make_sandbox; out=$(DRY_RUN=1 step); assert_eq 0 $? "dry-run ok"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Step 07: install config/CLAUDE.md as a marked block inside ~/.claude/CLAUDE.md.
+# Step 03 (runs before graphify so graphify finds its name in CLAUDE.md and adds nothing): install config/CLAUDE.md as a marked block inside ~/.claude/CLAUDE.md.
 
 step_run() {
   local target="$HOME/.claude/CLAUDE.md" cfg="$REPO_DIR/config/CLAUDE.md"
@@ -9,6 +9,7 @@ step_run() {
   case "$rc" in
     0) log "reason: already current"; return 0 ;;
     10) ;;
+    1) log "reason: unmatched setup-claude marker in $target; fix it by hand. File untouched"; return 1 ;;
     *) log "reason: could not prepare $target"; return 1 ;;
   esac
   if [ "${DRY_RUN:-0}" = 1 ]; then log "[dry-run] would update the setup-claude block in $target"; return 0; fi

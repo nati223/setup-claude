@@ -38,6 +38,14 @@ make_sandbox; S="$HOME/.claude/settings.json"; echo '{oops' > "$S"; before=$(cks
 python3 "$MERGE" "$S" 2>/dev/null; assert_eq 1 $? "invalid JSON exit 1"
 assert_eq "$before" "$(cksum < "$S")" "invalid JSON file byte-identical"
 
+# mode and symlink preserved
+make_sandbox; S="$HOME/.claude/settings.json"; echo '{"a":1}' > "$S"; chmod 600 "$S"
+python3 "$MERGE" "$S"; assert_eq 600 "$(stat -c %a "$S")" "merge keeps mode 600"
+make_sandbox; echo '{"a":1}' > "$HOME/real.json"; ln -s "$HOME/real.json" "$HOME/.claude/settings.json"
+python3 "$MERGE" "$HOME/.claude/settings.json"
+assert_eq 1 "$([ -L "$HOME/.claude/settings.json" ] && echo 1 || echo 0)" "symlink stays a symlink"
+assert_eq sonnet "$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['model'])" "$HOME/real.json")" "symlink target updated"
+
 # step 06
 make_sandbox; S="$HOME/.claude/settings.json"; echo '{"theme":"dark"}' > "$S"
 out=$(step 06-settings); assert_eq 0 $? "step 06 ok"

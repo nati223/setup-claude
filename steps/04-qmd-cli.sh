@@ -15,9 +15,9 @@ step_run() {
       log "reason: node $(node -v 2>/dev/null || echo missing) is too old; qmd needs Node >= 22"
       return 1
     fi
-    run npm install -g --prefix "$HOME/.local" @tobilu/qmd || { log "reason: npm install @tobilu/qmd failed"; return 1; }
+    run_net npm install -g --prefix "$HOME/.local" @tobilu/qmd || { log "reason: npm install @tobilu/qmd failed"; return 1; }
   elif have bun; then
-    run bun install -g @tobilu/qmd || { log "reason: bun install @tobilu/qmd failed"; return 1; }
+    run_net bun install -g @tobilu/qmd || { log "reason: bun install @tobilu/qmd failed"; return 1; }
   else
     log "reason: need npm (Node 22+) or bun"
     return 1

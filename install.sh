@@ -38,6 +38,14 @@ matches() {
   return 1
 }
 
+export GIT_TERMINAL_PROMPT=0   # a renamed or deleted marketplace repo must fail, not wait for a password
+
+# Back up the files that steps (or the tools they call) rewrite, before any step runs.
+if [ "$DRY_RUN" != 1 ]; then
+  backup_file "$HOME/.claude/settings.json"
+  backup_file "$HOME/.claude/CLAUDE.md"
+fi
+
 RESULTS=() FAILED=0
 record() { # status id reason
   RESULTS+=("$(printf '%-9s%s%s' "$1" "$2" "${3:+  $3}")")

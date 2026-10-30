@@ -7,6 +7,7 @@ A missing or empty file counts as {}. Invalid JSON leaves the file untouched.
 """
 import json
 import os
+import stat
 import sys
 
 FORCED = {"model": "sonnet", "advisorModel": "opus", "outputStyle": "Concise Custom"}
@@ -35,10 +36,13 @@ def main(argv):
         return 0
     if dry:
         return 10
+    path = os.path.realpath(path)  # write through a symlink instead of replacing it
     tmp = path + ".tmp"
     with open(tmp, "w") as f:
         json.dump(merged, f, indent=2)
         f.write("\n")
+    if os.path.exists(path):
+        os.chmod(tmp, stat.S_IMODE(os.stat(path).st_mode))  # keep 600 etc.
     os.replace(tmp, path)
     return 0
 

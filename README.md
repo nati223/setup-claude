@@ -17,11 +17,11 @@ Each step runs on its own. A failing step is reported and the run continues. The
 |---|---|
 | 01 claude | Claude Code (official installer) and `~/.local/bin` on PATH |
 | 02 plugins | superpowers, qmd, andrej-karpathy-skills, claude-handoff (from plugin marketplaces) |
-| 03 graphify | `uv` (if missing), then `graphifyy` and its Claude skill |
+| 03 claude-md | a marked block in `~/.claude/CLAUDE.md` (qmd/graphify rules, code-review standards); text outside the block stays. Runs before graphify on purpose: graphify then finds its name in the file and adds nothing |
 | 04 qmd-cli | the `qmd` CLI (`@tobilu/qmd`; needs Node 22+ or bun; the plugin needs it) |
 | 05 style | output style `Concise Custom` in `~/.claude/output-styles/` |
-| 06 settings | sets `model: sonnet`, `advisorModel: opus`, `outputStyle: Concise Custom` in `~/.claude/settings.json`; other keys stay; backup first |
-| 07 claude-md | a marked block in `~/.claude/CLAUDE.md` (qmd/graphify rules, code-review standards); text outside the block stays |
+| 06 settings | sets `model: sonnet`, `advisorModel: opus`, `outputStyle: Concise Custom` in `~/.claude/settings.json`; other keys stay; file mode and symlinks kept |
+| 07 graphify | `uv` (if missing), then `graphifyy` and its Claude skill |
 | 90 headroom | optional, only with `--with-headroom` |
 
 ## Flags
@@ -31,6 +31,11 @@ bash install.sh [--only STEP]... [--skip STEP]... [--with-headroom] [--dry-run]
 ```
 
 `STEP` is a number (`03`) or a name (`graphify`). `--dry-run` prints what would happen and changes nothing.
+
+## Backups and timeouts
+
+- Before any step runs, `settings.json` and `CLAUDE.md` are copied to `<file>.bak.<time>` (skipped when an identical backup exists). `claude plugin ...` rewrites `settings.json` itself, so this has to come first.
+- Network commands stop after `NET_TIMEOUT` seconds (default 900). Git never asks for a password.
 
 ## Notes
 

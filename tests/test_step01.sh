@@ -26,6 +26,18 @@ assert_eq 0 "$rc" "second run ok"
 assert_contains "$out" "already installed" "second run detects install"
 assert_eq 1 "$(count_path_lines)" "PATH line not duplicated on re-run"
 
+# a comment mentioning .local/bin is not a PATH line
+make_sandbox; fake_installer "$SANDBOX/inst.sh"; export CLAUDE_INSTALL_URL="file://$SANDBOX/inst.sh"
+printf '# TODO: maybe add ~/.local/bin later\n' > "$HOME/.bashrc"
+out=$(step); assert_eq 1 "$(count_path_lines)" "comment does not block the PATH line"
+
+# broken binary: --version fails
+make_sandbox; printf 'mkdir -p "$HOME/.local/bin"; printf "#!/bin/sh\\nexit 1\\n" > "$HOME/.local/bin/claude"; chmod +x "$HOME/.local/bin/claude"\n' > "$SANDBOX/bad.sh"
+export CLAUDE_INSTALL_URL="file://$SANDBOX/bad.sh"
+out=$(step); rc=$?
+assert_eq 1 "$rc" "claude that fails --version is FAILED"
+assert_contains "$out" "reason:" "broken binary has reason"
+
 # download fails
 make_sandbox
 export CLAUDE_INSTALL_URL="file:///nonexistent/inst.sh"

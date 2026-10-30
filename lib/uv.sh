@@ -8,14 +8,14 @@ ensure_uv() {
   have uv && return 0
   for p in pip3 pip; do
     if have "$p"; then
-      run "$p" install --user -q uv >/dev/null 2>&1
+      run_net "$p" install --user -q uv >/dev/null 2>&1
       ensure_path
       have uv && return 0
       break
     fi
   done
   tmp="$(mktemp)"
-  if run curl -LsSf --max-time 120 "${UV_INSTALL_URL:-https://astral.sh/uv/install.sh}" -o "$tmp" && run sh "$tmp"; then
+  if run curl -LsSf --max-time 120 "${UV_INSTALL_URL:-https://astral.sh/uv/install.sh}" -o "$tmp" && run_net sh "$tmp"; then
     ensure_path
   fi
   rm -f "$tmp"

@@ -55,6 +55,14 @@ setup; export CLAUDE_BIN="$SANDBOX/nope"; out=$(step); rc=$?
 assert_eq 1 "$rc" "missing claude: rc 1"
 assert_contains "$out" "claude not found" "missing claude reason"
 
+setup; NET_TIMEOUT=1; export NET_TIMEOUT
+sed -i 's|^  "plugin install")|  "plugin install") [ "$3" = "${FAKE_HANG_ID:-}" ] \&\& exec sleep 5;|' "$SANDBOX/fakebin/claude"
+export FAKE_HANG_ID="qmd@qmd"; start=$(date +%s); out=$(step); rc=$?; took=$(( $(date +%s) - start ))
+assert_eq 1 "$rc" "hanging install is FAILED, not a hang"
+assert_contains "$(printf '%s' "$out" | grep 'reason:')" "qmd@qmd" "hung plugin named in reason"
+assert_eq 1 "$([ "$took" -lt 4 ] && echo 1 || echo 0)" "hang cut off by NET_TIMEOUT"
+unset FAKE_HANG_ID NET_TIMEOUT
+
 setup; out=$(DRY_RUN=1 step); rc=$?
 assert_eq 0 "$rc" "dry-run rc 0"
 assert_eq 0 "$(n '^plugin install')" "dry-run makes no installs"

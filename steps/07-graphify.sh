@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Step 03: ensure uv, then install graphify (PyPI name: graphifyy) and register its Claude skill.
+# Step 07: ensure uv, then install graphify (PyPI name: graphifyy) and register its Claude skill.
 # graphify has no plugin marketplace entry, so this uses uv. `graphify install --platform claude`
 # registers the skill under ~/.claude/skills.
 
@@ -9,7 +9,7 @@ source "$REPO_DIR/lib/uv.sh"
 step_run() {
   ensure_uv || { log "reason: could not install uv"; return 1; }
   if ! have graphify; then
-    run uv tool install graphifyy || { log "reason: uv tool install graphifyy failed"; return 1; }
+    run_net uv tool install graphifyy || { log "reason: uv tool install graphifyy failed"; return 1; }
     ensure_path
   fi
   run graphify install --platform claude || { log "reason: graphify install failed"; return 1; }

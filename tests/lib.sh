@@ -28,7 +28,7 @@ finish() { [ "$FAILS" -eq 0 ]; exit $?; }
 make_min_path() {
   mkdir -p "$SANDBOX/bin" "$SANDBOX/fake"
   local c p
-  for c in bash sh curl ln mktemp date cp mkdir grep awk sed cat rm dirname basename tee head tail tr wc cmp find ls env uname readlink cksum sort touch chmod python3; do
+  for c in bash sh curl timeout sleep ln mktemp date cp mkdir grep awk sed cat rm dirname basename tee head tail tr wc cmp find ls env uname readlink cksum sort touch chmod python3; do
     p="$(command -v "$c")"
     case "$p" in /*) ln -sf "$p" "$SANDBOX/bin/$c" ;; esac
   done
