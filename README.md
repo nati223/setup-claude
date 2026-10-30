@@ -32,6 +32,22 @@ bash install.sh [--only STEP]... [--skip STEP]... [--with-headroom] [--dry-run]
 
 `STEP` is a number (`03`) or a name (`graphify`). `--dry-run` prints what would happen and changes nothing.
 
+## External tools and where they come from
+
+| Tool | Installed by | Source |
+|---|---|---|
+| Claude Code | step 01 | [setup docs](https://code.claude.com/docs/en/setup) |
+| superpowers (plugin) | step 02, marketplace `claude-plugins-official` | [obra/superpowers](https://github.com/obra/superpowers), [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| qmd (plugin) | step 02, marketplace `qmd` | [tobi/qmd](https://github.com/tobi/qmd) |
+| andrej-karpathy-skills (plugin) | step 02, marketplace `karpathy-skills` | [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) |
+| claude-handoff (plugin) | step 02, marketplace `claude-handoff` | [392fyc/claude-handoff](https://github.com/392fyc/claude-handoff) |
+| qmd CLI (`@tobilu/qmd`) | step 04 (npm or bun) | [tobi/qmd](https://github.com/tobi/qmd) |
+| graphify (`graphifyy` on PyPI) | step 07 (uv; no plugin marketplace entry exists) | [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) |
+| uv | step 07, only if missing | [astral-sh/uv](https://github.com/astral-sh/uv) |
+| headroom (optional) | step 90, marketplace `headroom-marketplace` | [chopratejas/headroom](https://github.com/chopratejas/headroom) |
+
+The output style is based on the built-in Concise style described in the [output styles docs](https://code.claude.com/docs/en/output-styles).
+
 ## Backups and timeouts
 
 - Before any step runs, `settings.json` and `CLAUDE.md` are copied to `<file>.bak.<time>` (skipped when an identical backup exists). `claude plugin ...` rewrites `settings.json` itself, so this has to come first.
