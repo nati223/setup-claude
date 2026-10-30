@@ -9,6 +9,7 @@ PLUGINS=(
   "tobi/qmd qmd@qmd"
   "forrestchang/andrej-karpathy-skills andrej-karpathy-skills@karpathy-skills"
   "392fyc/claude-handoff claude-handoff@claude-handoff"
+  "Imbad0202/academic-research-skills academic-research-skills@academic-research-skills"
 )
 
 step_run() {

@@ -14,6 +14,14 @@ assert_eq 0 "$(n '^pip')" "07: uv present: no pip"
 assert_contains "$(cat "$FAKE_LOG")" "graphify install --platform claude" "07: runs graphify install"
 assert_eq 0 "$(n '^uv tool install')" "07: graphify present: no uv tool install"
 
+# skill already registered: nothing to do
+setup; fake_cmd uv; fake_cmd graphify; mkdir -p "$HOME/.claude/skills/graphify"; : > "$HOME/.claude/skills/graphify/SKILL.md"
+out=$(step 07-graphify); rc=$?
+assert_eq 0 "$rc" "07: skill already registered: ok"
+assert_eq 0 "$(n '^graphify install')" "07: skill already registered: no graphify install"
+assert_eq 0 "$(n '^uv tool install')" "07: skill already registered: no uv tool install"
+assert_contains "$out" "already" "07: skill already registered: logged"
+
 setup; fake_cmd uv; out=$(step 07-graphify); rc=$?
 assert_contains "$(cat "$FAKE_LOG")" "uv tool install graphifyy" "07: installs graphifyy (two y)"
 

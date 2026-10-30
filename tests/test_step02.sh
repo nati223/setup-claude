@@ -26,8 +26,10 @@ setup() { make_sandbox; make_fake_claude; export FAKE_LOG="$SANDBOX/calls.log" C
 
 setup; out=$(step); rc=$?
 assert_eq 0 "$rc" "all succeed: rc 0"
-assert_eq 3 "$(n '^plugin marketplace add')" "3 marketplace adds (official already known)"
-assert_eq 4 "$(n '^plugin install')" "4 installs"
+assert_eq 4 "$(n '^plugin marketplace add')" "4 marketplace adds (official already known)"
+assert_eq 5 "$(n '^plugin install')" "5 installs"
+assert_contains "$(cat "$FAKE_LOG")" "plugin marketplace add Imbad0202/academic-research-skills" "academic-research-skills marketplace repo"
+assert_contains "$(cat "$FAKE_LOG")" "plugin install academic-research-skills@academic-research-skills" "academic-research-skills id"
 assert_contains "$(cat "$FAKE_LOG")" "plugin marketplace add tobi/qmd" "qmd marketplace repo"
 assert_contains "$(cat "$FAKE_LOG")" "plugin install claude-handoff@claude-handoff" "handoff id"
 assert_contains "$(cat "$FAKE_LOG")" "plugin install andrej-karpathy-skills@karpathy-skills" "karpathy id"
@@ -37,16 +39,26 @@ setup; export FAKE_FAIL_ID="qmd@qmd"; out=$(step); rc=$?
 assert_eq 1 "$rc" "one install fails: rc 1"
 assert_contains "$out" "reason:" "reason line present"
 assert_contains "$(printf '%s' "$out" | grep 'reason:')" "qmd@qmd" "reason names failed plugin"
-assert_eq 4 "$(n '^plugin install')" "other installs still attempted"
+assert_eq 5 "$(n '^plugin install')" "other installs still attempted"
 
 setup; export FAKE_FAIL_ADD="tobi/qmd"; out=$(step); rc=$?
 assert_eq 1 "$rc" "marketplace add fails: rc 1"
-assert_eq 3 "$(n '^plugin install')" "no install attempted for plugin whose marketplace failed"
+assert_eq 4 "$(n '^plugin install')" "no install attempted for plugin whose marketplace failed"
 
 setup; export FAKE_INSTALLED="andrej-karpathy-skills@karpathy-skills"; out=$(step); rc=$?
 assert_eq 0 "$rc" "already-installed plugin: rc 0"
-assert_eq 3 "$(n '^plugin install')" "already-installed plugin not reinstalled"
+assert_eq 4 "$(n '^plugin install')" "already-installed plugin not reinstalled"
 assert_contains "$out" "already installed" "already-installed logged"
+
+# everything already installed: nothing is added or installed
+setup; export FAKE_INSTALLED="superpowers@claude-plugins-official qmd@qmd andrej-karpathy-skills@karpathy-skills claude-handoff@claude-handoff academic-research-skills@academic-research-skills"
+export FAKE_MARKETS="claude-plugins-official qmd karpathy-skills claude-handoff academic-research-skills"
+out=$(step); rc=$?
+assert_eq 0 "$rc" "all present: rc 0"
+assert_eq 0 "$(n '^plugin install')" "all present: no installs"
+assert_eq 0 "$(n '^plugin marketplace add')" "all present: no marketplace adds"
+assert_eq 5 "$(printf '%s' "$out" | grep -c 'already installed')" "all present: each plugin reported as already installed"
+unset FAKE_MARKETS
 
 setup; export FAKE_MARKETS=""; out=$(step)
 assert_contains "$(cat "$FAKE_LOG")" "plugin marketplace add anthropics/claude-plugins-official" "official marketplace added when unknown"

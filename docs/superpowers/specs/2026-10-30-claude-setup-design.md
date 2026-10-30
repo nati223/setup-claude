@@ -84,6 +84,10 @@ Run with a throwaway `HOME` (and `XDG_CONFIG_HOME` / `XDG_CACHE_HOME`) so the re
 - Step 04 installs the qmd CLI with bun first (official bun installer if bun is missing; needs `unzip`), npm (Node 22+) only as a fallback. Checked in an isolated HOME: `bun install -g @tobilu/qmd` gives `qmd 2.8.3`; search and `qmd embed` work.
 - `config/CLAUDE.md` is now one "Search order" rule plus the code-review standards. Removed as redundant: the qmd command list (the qmd skill has a richer, newer workflow), graphify's query rules (graphify's skill description and its project install already say them), and the `/graphify` line (the harness already invokes slash skills).
 
+## Changes after the server-shift review
+- Step 02 also installs `academic-research-skills@academic-research-skills` (repo `Imbad0202/academic-research-skills`).
+- Every step checks first and moves on when its tool is already present: claude, each plugin and marketplace, bun, qmd, uv, graphify (CLI and registered skill), style and block (content compare), settings (merge dry-run), headroom.
+
 ## Left to the builder
 Script style, log format, exact CLI flags, how to detect "already installed", README wording.
 

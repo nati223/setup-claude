@@ -7,6 +7,10 @@
 source "$REPO_DIR/lib/uv.sh"
 
 step_run() {
+  if have graphify && [ -f "$HOME/.claude/skills/graphify/SKILL.md" ]; then
+    log "reason: graphify already installed and registered"
+    return 0
+  fi
   ensure_uv || { log "reason: could not install uv"; return 1; }
   if ! have graphify; then
     run_net uv tool install graphifyy || { log "reason: uv tool install graphifyy failed"; return 1; }
