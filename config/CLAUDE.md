@@ -1,6 +1,6 @@
 ## Search order
 
-In a project with `graphify-out/graph.json`, use graphify (`graphify query` / `path` / `explain`) for codebase questions, and run `graphify update .` after changing code. In a project with a qmd collection (`qmd collection list`), use qmd (see the qmd skill) before reading files. Use Read/Grep last.
+In a project with `graphify-out/graph.json`, use graphify (`graphify query` / `path` / `explain`) for codebase questions. In a project with a qmd collection (`qmd collection list`), use qmd (see the qmd skill) before reading files. Use Read/Grep last.
 
 ## Code Review Standards
 
