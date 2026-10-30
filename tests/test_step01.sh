@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-export PATH="/usr/bin:/bin"   # hide the real claude
+ORIG_PATH="/usr/bin:/bin"; export PATH="$ORIG_PATH"   # hide the real claude
 source "$REPO_DIR/lib/common.sh"
 
 step() { ( source "$REPO_DIR/steps/01-claude.sh"; step_run ) 2>&1; }
