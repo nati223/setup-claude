@@ -3,7 +3,7 @@
 One command that rebuilds my Claude Code setup on a fresh Linux server.
 
 ```bash
-git clone <this repo> && cd setup_claude
+git clone https://github.com/nati223/setup-claude && cd setup-claude
 bash install.sh
 source ~/.bashrc     # so `claude` is on PATH in this terminal
 claude               # log in (not automated)

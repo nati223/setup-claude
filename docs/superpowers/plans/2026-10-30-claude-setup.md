@@ -51,7 +51,7 @@
 ### Task 1: Scaffold, test harness, common helpers
 
 **Files:**
-- Create: `LICENSE` (MIT, holder "Netanel Nissan", year 2026), `.gitignore` (`*.bak.*`, `.env`), `lib/common.sh`, `tests/lib.sh`, `tests/run.sh`, `tests/test_common.sh`
+- Create: `LICENSE` (MIT, holder "Natanel Nissan", year 2026), `.gitignore` (`*.bak.*`, `.env`), `lib/common.sh`, `tests/lib.sh`, `tests/run.sh`, `tests/test_common.sh`
 
 **Interfaces:**
 - Produces in `lib/common.sh`:
