@@ -88,6 +88,9 @@ Run with a throwaway `HOME` (and `XDG_CONFIG_HOME` / `XDG_CACHE_HOME`) so the re
 - Step 02 also installs `academic-research-skills@academic-research-skills` (repo `Imbad0202/academic-research-skills`).
 - Every step checks first and moves on when its tool is already present: claude, each plugin and marketplace, bun, qmd, uv, graphify (CLI and registered skill), style and block (content compare), settings (merge dry-run), headroom.
 
+## Change after the claude-md-management review
+- Step 02 also installs `claude-md-management@claude-plugins-official` (skill `claude-md-improver`, command `/revise-claude-md`). Risk noted in the README: its edits inside the marked block are overwritten on the next run.
+
 ## Left to the builder
 Script style, log format, exact CLI flags, how to detect "already installed", README wording.
 

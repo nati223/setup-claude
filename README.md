@@ -16,7 +16,7 @@ Every step checks first whether its tool is already there and moves on if so. Ea
 | Step | What |
 |---|---|
 | 01 claude | Claude Code (official installer) and `~/.local/bin` on PATH |
-| 02 plugins | superpowers, qmd, andrej-karpathy-skills, claude-handoff, academic-research-skills (from plugin marketplaces; anything already installed is left alone) |
+| 02 plugins | superpowers, claude-md-management, qmd, andrej-karpathy-skills, claude-handoff, academic-research-skills (from plugin marketplaces; anything already installed is left alone) |
 | 03 claude-md | a short marked block in `~/.claude/CLAUDE.md`: one search-order rule (graphify, then qmd, then Read/Grep) and the code-review standards. It does not repeat what the qmd skill and graphify already tell Claude. Text outside the block stays. Runs before graphify on purpose: graphify then finds its name in the file and adds nothing |
 | 04 qmd-cli | the `qmd` CLI (`@tobilu/qmd`) with bun (the bun installer is run if bun is missing; it needs `unzip`). Falls back to npm with Node 22+. The plugin needs this command |
 | 05 style | output style `Concise Custom` in `~/.claude/output-styles/` |
@@ -38,6 +38,7 @@ bash install.sh [--only STEP]... [--skip STEP]... [--with-headroom] [--dry-run]
 |---|---|---|
 | Claude Code | step 01 | [setup docs](https://code.claude.com/docs/en/setup) |
 | superpowers (plugin) | step 02, marketplace `claude-plugins-official` | [obra/superpowers](https://github.com/obra/superpowers), [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| claude-md-management (plugin) | step 02, marketplace `claude-plugins-official` | [plugins/claude-md-management](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management) |
 | qmd (plugin) | step 02, marketplace `qmd` | [tobi/qmd](https://github.com/tobi/qmd) |
 | andrej-karpathy-skills (plugin) | step 02, marketplace `karpathy-skills` | [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) |
 | claude-handoff (plugin) | step 02, marketplace `claude-handoff` | [392fyc/claude-handoff](https://github.com/392fyc/claude-handoff) |
@@ -57,6 +58,7 @@ The output style is based on the built-in Concise style described in the [output
 
 ## Notes
 
+- **claude-md-management:** `/revise-claude-md` can edit `~/.claude/CLAUDE.md`. Edits inside the `setup-claude:begin/end` block are overwritten by the next `install.sh` run. Put lasting rules in `config/CLAUDE.md` in this repo. Review each diff it proposes: it tends to add commands and conventions that a skill already covers.
 - **qmd per project** (not scripted): `qmd collection add ./proj --name proj --mask "**/*.{md,txt,py}"`, then `qmd embed` for semantic search, `qmd update` after changes, `qmd status` to check. The plugin registers qmd's MCP server itself, so no `~/.claude/mcp.json` entry is needed.
 - **qmd searches text files only** (md, txt, code). PDF and DOCX are not searchable in qmd. HTML indexes as raw markup (noisy). Create collections yourself, for example `qmd collection add ~/notes --name notes --mask "**/*.{md,txt}"`.
 - **The style is a copy.** `config/output-styles/concise-custom.md` holds the text of Claude Code 2.1.314's built-in Concise style plus four additions. If Anthropic changes the built-in style, this copy does not follow.

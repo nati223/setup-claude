@@ -6,6 +6,7 @@ source "$REPO_DIR/lib/plugins.sh"
 
 PLUGINS=(
   "anthropics/claude-plugins-official superpowers@claude-plugins-official"
+  "anthropics/claude-plugins-official claude-md-management@claude-plugins-official"
   "tobi/qmd qmd@qmd"
   "forrestchang/andrej-karpathy-skills andrej-karpathy-skills@karpathy-skills"
   "392fyc/claude-handoff claude-handoff@claude-handoff"
